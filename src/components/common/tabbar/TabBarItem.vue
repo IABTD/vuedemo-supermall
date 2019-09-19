@@ -4,7 +4,6 @@
     <div v-else><slot name="item-icon-active"></slot></div>
     <div :style="activeStyle" :class="{active:isActive}"><slot name="item-text"></slot></div>
   </div>
-
 </template>
 
 <script>

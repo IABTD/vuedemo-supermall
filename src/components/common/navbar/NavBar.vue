@@ -1,5 +1,15 @@
 <template>
-  
+  <div class="nav-bar">
+    <div class="left">
+      <slot name="left"></slot>
+    </div>
+    <div class="center">
+      <slot name="center"></slot>
+    </div>
+    <div class="right">
+      <slot name="right"></slot>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -9,5 +19,21 @@
 </script>
 
 <style scoped>
+  .nav-bar {
+    display: flex;
+    height: 44px;
+    text-align: center;
+    line-height: 44px; /*导航栏高度一般是44px,状态栏一般20px，如果加上的话就要64*/
+    box-shadow: 0 1px 1px rgba(100,100,100,.1);
+  }
 
+  .left, .right {
+    width: 60px;
+    /*background-color: red;*/
+  }
+
+  .center {
+    flex: 1; /*占据剩余所有空位*/
+    /*background-color: blue;*/
+  }
 </style>
