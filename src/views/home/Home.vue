@@ -11,11 +11,27 @@
 
 <script>
   import NavBar from 'components/common/navbar/NavBar'
+  import {getHomeMutltidata} from "network/home";
 
   export default {
     name: "Home",
     components: {
       NavBar,
+    },
+    data(){
+      return {
+        banners:[],
+        recommends:[]
+      }
+    },
+    created() {
+      // 1.请求多个数据
+      getHomeMutltidata().then(res => {
+        console.log(res);
+        this.result = res;
+        this.banners = res.data.banner.list;
+        this.recommends = res.data.recommend.list;
+      })
     }
   }
 </script>
