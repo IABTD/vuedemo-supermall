@@ -1,7 +1,9 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <!--  <h2>首页</h2>-->
   <div id="home"><!--首页是唯一的，所以给个id-->
-    <nav-bar class="home-nav"><template v-slot:center>购物街</template></nav-bar>
+    <nav-bar class="home-nav">
+      <template v-slot:center>购物街</template>
+    </nav-bar>
     <home-swiper :banners="banners"></home-swiper>
     <recommend-view :recommends="recommends"></recommend-view>
     <feature-view></feature-view>
@@ -119,7 +121,7 @@
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from 'components/content/tabControl/TabControl'
 
-  import {getHomeMutltidata} from "network/home";
+  import {getHomeMutltidata, getHomeGoods,} from "network/home";
 
 
   export default {
@@ -131,27 +133,49 @@
       NavBar,
       TabControl
     },
-    data(){
+    data() {
       return {
-        banners:[],
-        recommends:[]
+        banners: [],
+        recommends: [],
+        goods: {
+          'pop': {page: 0, list: []},
+          'new': {page: 0, list: []},
+          'sell': {page: 0, list: []},
+        }
       }
     },
     created() {
       // 1.请求多个数据
-      getHomeMutltidata().then(res => {
-        console.log(res);
-        this.result = res;
-        this.banners = res.data.banner.list;
-        this.recommends = res.data.recommend.list;
-      })
+      this.getHomeMutltidata()
+
+      // 2.请求商品数据
+      this.getHomeGoods('pop')
+      this.getHomeGoods('new')
+      this.getHomeGoods('sell')
+    },
+    methods: {
+      getHomeMutltidata() {
+        getHomeMutltidata().then(res => {
+          console.log(res);
+          this.result = res;
+          this.banners = res.data.banner.list;
+          this.recommends = res.data.recommend.list;
+        })
+      },
+      getHomeGoods(type) {
+        const page = this.goods[type].page + 1
+        getHomeGoods(type, page).then(res => {
+          this.goods[type].list.push(...res.data.list)
+          this.goods[type].page += 1
+        })
+      }
     }
   }
 </script>
 
 <style scoped>
 
-  #home{
+  #home {
     padding-top: 44px;
   }
 
@@ -163,11 +187,11 @@
     left: 0;
     right: 0;
     top: 0;
-    z-index:9;
+    z-index: 9;
   }
 
-  .tab-control{
-    position:sticky;
-    top:44px;
+  .tab-control {
+    position: sticky;
+    top: 44px;
   }
 </style>
