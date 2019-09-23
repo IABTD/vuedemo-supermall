@@ -126,9 +126,21 @@
       // })
     },
     mounted(){
+      this.scroll = new BScroll(document.querySelector('.wrapper'),{
+        probeType:3,//只要是滑动就监听，包括惯性滑动
+        pullUpLoad: true
+      })
+
+      this.scroll.on('scroll',(position)=>{
+        console.log(position);
+      })
+
+      this.scroll.on('pullingUp',()=>{
+        console.log('上拉加载')
+      })
       // new BScroll(document.querySelector('.wrapper'))//可以
       // this.scroll = new BScroll('.wrapper') //可以
-      new BScroll('.wrapper')//可以
+      // new BScroll('.wrapper')//可以
     }
   }
 </script>
