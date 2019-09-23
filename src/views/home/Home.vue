@@ -5,7 +5,7 @@
       <template v-slot:center>购物街</template>
     </nav-bar>
 
-    <scroll class="content">
+    <scroll class="content" ref="scroll">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
@@ -116,6 +116,8 @@
         <li>首页列表100</li>
       </ul>
     </scroll>
+<!--    <back-top @click="backClick"></back-top>--> <!--这个监听不到click，只有原生元素可以用click，除非指定.native修饰符-->
+    <back-top @click.native="backClick"></back-top>
 
     <!--<div class="wrapper">
       <div class="content">
@@ -133,6 +135,7 @@
   import TabControl from 'components/content/tabControl/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
   import Scroll from 'components/common/scroll/Scroll'
+  import BackTop from 'components/content/backTop/BackTop'
 
   import {getHomeMutltidata, getHomeGoods,} from "network/home";
 
@@ -146,7 +149,8 @@
       NavBar,
       TabControl,
       GoodsList,
-      Scroll
+      Scroll,
+      BackTop
     },
     data() {
       return {
@@ -192,6 +196,11 @@
           default:
             break;
         }
+      },
+
+      backClick(){
+        // console.log('回到顶部')
+        this.$refs.scroll.scrollTo(0,0)
       },
 
       /**
