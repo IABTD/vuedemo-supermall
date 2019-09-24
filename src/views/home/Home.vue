@@ -183,13 +183,13 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
-
+    },
+    mounted(){
       // 3.监听item中图片加载完成
       this.$bus.$on('itemImageLoad',()=>{
-        // console.log('-----------');
         this.$refs.scroll.refresh()
       })
-    },
+    }
     methods: {
       /**
        *  事件监听相关的方法
