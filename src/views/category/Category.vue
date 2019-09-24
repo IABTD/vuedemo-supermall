@@ -2,6 +2,10 @@
   <div>
     <h2>分类</h2>
     <div class="wrapper">
+<!--      1.无论是否设置click;false,button都可以点击-->
+<!--      <button @click="btnClick">按钮</button>-->
+<!--      2.必须设置click:true,div才能被监听，然而新版好像没这个限制，测试了一下-->
+<!--      <div @click="divClick">呵呵呵</div>-->
       <ul class="content">
         <li>分类列表1</li>
         <li>分类列表2</li>
@@ -128,7 +132,8 @@
     mounted(){
       this.scroll = new BScroll(document.querySelector('.wrapper'),{
         probeType:3,//只要是滑动就监听，包括惯性滑动
-        pullUpLoad: true
+        pullUpLoad: true,
+        click:true,
       })
 
       this.scroll.on('scroll',(position)=>{
@@ -141,6 +146,14 @@
       // new BScroll(document.querySelector('.wrapper'))//可以
       // this.scroll = new BScroll('.wrapper') //可以
       // new BScroll('.wrapper')//可以
+    },
+    methods:{
+      // divClick(){
+      //   console.log('div被点击')
+      // },
+      // btnClick(){
+      //   console.log('button被点击')
+      // }
     }
   }
 </script>

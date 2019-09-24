@@ -5,7 +5,12 @@
       <template v-slot:center>购物街</template>
     </nav-bar>
 
-    <scroll class="content" ref="scroll">
+    <scroll class="content"
+            ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll"
+            :pull-up-load="true"
+            @pullingUp="loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
@@ -116,8 +121,8 @@
         <li>首页列表100</li>
       </ul>
     </scroll>
-<!--    <back-top @click="backClick"></back-top>--> <!--这个监听不到click，只有原生元素可以用click，除非指定.native修饰符-->
-    <back-top @click.native="backClick"></back-top>
+    <!--    <back-top @click="backClick"></back-top>--> <!--这个监听不到click，只有原生元素可以用click，除非指定.native修饰符-->
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
 
     <!--<div class="wrapper">
       <div class="content">
@@ -161,11 +166,12 @@
           'new': {page: 0, list: []},
           'sell': {page: 0, list: []},
         },
-        currentType:'pop',
+        currentType: 'pop',
+        isShowBackTop: false,
       }
     },
-    computed:{
-      showGoods(){
+    computed: {
+      showGoods() {
         return this.goods[this.currentType].list;
       }
     },
@@ -197,12 +203,18 @@
             break;
         }
       },
-
-      backClick(){
+      backClick() {
         // console.log('回到顶部')
-        this.$refs.scroll.scrollTo(0,0)
+        this.$refs.scroll.scrollTo(0, 0)
       },
-
+      contentScroll(position) {
+        this.isShowBackTop = (-position.y) > 1000
+      },
+      loadMore() {
+        // alert(123456)
+        // console.log('上拉加载.......上拉加载.......上拉加载.......上拉加载.......')
+        this.getHomeGoods(this.currentType)
+      },
       /**
        * 网络请求相关的方法
        */
@@ -219,8 +231,10 @@
         getHomeGoods(type, page).then(res => {
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
+
+          this.$refs.scroll.finishPullUp()
         })
-      }
+      },
     }
   }
 </script>
@@ -250,14 +264,15 @@
     z-index: 9;
   }
 
-  .content{
+  .content {
     overflow: hidden;
-    position:absolute;
-    top:44px;
+    position: absolute;
+    top: 44px;
     bottom: 49px;
     left: 0;
     right: 0;
   }
+
   /*.content{*/
   /*  height: calc(100% - 93px);*/
   /*  overflow: hidden;*/
