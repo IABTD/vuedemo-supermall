@@ -9,8 +9,8 @@
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
-            :pull-up-load="true"
-            @pullingUp="loadMore">
+            :pull-up-load="true">
+<!--            @pullingUp="loadMore">-->
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
@@ -183,6 +183,12 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
+      // 3.监听item中图片加载完成
+      this.$bus.$on('itemImageLoad',()=>{
+        // console.log('-----------');
+        this.$refs.scroll.refresh()
+      })
     },
     methods: {
       /**
@@ -210,18 +216,16 @@
       contentScroll(position) {
         this.isShowBackTop = (-position.y) > 1000
       },
-      loadMore() {
+      /*loadMore() {
         // alert(123456)
         // console.log('上拉加载.......上拉加载.......上拉加载.......上拉加载.......')
         this.getHomeGoods(this.currentType)
-      },
+      },*/
       /**
        * 网络请求相关的方法
        */
       getHomeMutltidata() {
         getHomeMutltidata().then(res => {
-          console.log(res);
-          this.result = res;
           this.banners = res.data.banner.list;
           this.recommends = res.data.recommend.list;
         })
@@ -232,7 +236,7 @@
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
 
-          this.$refs.scroll.finishPullUp()
+          // this.$refs.scroll.finishPullUp()
         })
       },
     }

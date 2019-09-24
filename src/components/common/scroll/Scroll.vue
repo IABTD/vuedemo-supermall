@@ -15,11 +15,11 @@
       probeType:{
         type:Number,
         default:0,
-      },
+      }/*,
       pullUpLoad:{
         type:Boolean,
         dafault:false,
-      }
+      }*/
     },
     data(){
       return{
@@ -39,11 +39,16 @@
         this.$emit('scroll', position)
       })
 
-      // 3.监听上拉事件
-      this.scroll.on('pullingUp', () => {
-        // alert(123456)
-        this.$emit('pullingUp')
-      })
+      // console.log(this.scroll)
+
+      // this.scroll.scrollerHeight = 100000;
+
+      this.scroll.refresh()//让scroll重新计算srollerHeight高度
+      // // 3.监听上拉事件
+      // this.scroll.on('pullingUp', () => {
+      //   // alert(123456)
+      //   this.$emit('pullingUp')
+      // })
     },
     methods:{
       scrollTo(x, y, time=300) {
@@ -51,6 +56,9 @@
       },
       finishPullUp() {
         this.scroll.finishPullUp()
+      },
+      refresh(){
+        this.scroll.refresh()
       }
     }
 
