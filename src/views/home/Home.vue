@@ -10,7 +10,7 @@
             :probe-type="3"
             @scroll="contentScroll"
             :pull-up-load="true">
-<!--            @pullingUp="loadMore">-->
+      <!--            @pullingUp="loadMore">-->
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
@@ -184,16 +184,31 @@
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
     },
-    mounted(){
+    mounted() {
       // 3.监听item中图片加载完成
-      this.$bus.$on('itemImageLoad',()=>{
-        this.$refs.scroll.refresh()
+      const refresh = this.debounce(this.$refs.scroll.refresh, 300)
+      this.$bus.$on('itemImageLoad', () => {
+        refresh()
       })
-    }
+      // this.$bus.$on('itemImageLoad',()=>{
+      //   this.$refs.scroll.refresh()
+      // })
+    },
     methods: {
       /**
        *  事件监听相关的方法
        */
+      // 防抖动函数，短时间内多次执行检查函数
+      debounce(func, delay) {
+        let timer = null;
+        return function (...args) {
+          if (timer) clearTimeout(timer)
+          // timer = setTimeout(func(...args),delay)
+          timer = setTimeouxt(() => {
+            func.apply(this, args)
+          }, delay)
+        }
+      },
       tabClick(index) {
         switch (index) {
           case 0:
