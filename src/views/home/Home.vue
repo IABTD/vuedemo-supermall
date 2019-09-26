@@ -9,14 +9,16 @@
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
-            :pull-up-load="true">
+            :pull-up-load="true"
+            @pullingUp="loadMore">
       <!--            @pullingUp="loadMore">-->
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
       <tab-control class="tab-control"
                    :titles="['流行','新款','精选']"
-                   @tabClick="tabClick"></tab-control>
+                   @tabClick="tabClick"
+      ref="tabControl"></tab-control>
       <goods-list :goods="showGoods"></goods-list>
       <ul>
         <li>首页列表1</li>
@@ -143,7 +145,7 @@
   import BackTop from 'components/content/backTop/BackTop'
 
   import {getHomeMutltidata, getHomeGoods,} from "network/home";
-
+  import {debounce} from "@/common/uitls";
 
   export default {
     name: "Home",
@@ -168,6 +170,7 @@
         },
         currentType: 'pop',
         isShowBackTop: false,
+        offsetTop:0
       }
     },
     computed: {
@@ -185,30 +188,37 @@
       this.getHomeGoods('sell')
     },
     mounted() {
+      // console.log(this.$refs.tabControl.offsetTop)
+
       // 3.监听item中图片加载完成
-      const refresh = this.debounce(this.$refs.scroll.refresh, 300)
+      // const refresh = this.debounce(this.$refs.scroll.refresh, 100)
+      const refresh = debounce(this.$refs.scroll.refresh, 100)
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
       // this.$bus.$on('itemImageLoad',()=>{
       //   this.$refs.scroll.refresh()
       // })
+
+      console.log(this.$refs.tabControl.$el.offsetTop)
+      console.log(this.$refs.tabControl.$el)
+
     },
     methods: {
       /**
        *  事件监听相关的方法
        */
       // 防抖动函数，短时间内多次执行检查函数
-      debounce(func, delay) {
-        let timer = null;
-        return function (...args) {
-          if (timer) clearTimeout(timer)
-          // timer = setTimeout(func(...args),delay)
-          timer = setTimeouxt(() => {
-            func.apply(this, args)
-          }, delay)
-        }
-      },
+      // debounce(func, delay) {
+      //   let timer = null;
+      //   return function (...args) {
+      //     if (timer) clearTimeout(timer)
+      //     // timer = setTimeout(func(...args),delay)
+      //     timer = setTimeout(() => {
+      //       func.apply(this, args)
+      //     }, delay)
+      //   }
+      // },
       tabClick(index) {
         switch (index) {
           case 0:
@@ -231,11 +241,12 @@
       contentScroll(position) {
         this.isShowBackTop = (-position.y) > 1000
       },
-      /*loadMore() {
+      loadMore() {
         // alert(123456)
-        // console.log('上拉加载.......上拉加载.......上拉加载.......上拉加载.......')
+        console.log('上拉加载.......上拉加载.......上拉加载.......上拉加载.......')
         this.getHomeGoods(this.currentType)
-      },*/
+        //默认pullingUp只执行第一次，需要finishPullUp才能重置
+      },
       /**
        * 网络请求相关的方法
        */
@@ -251,7 +262,7 @@
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
 
-          // this.$refs.scroll.finishPullUp()
+          this.$refs.scroll.finishPullUp()
         })
       },
     }
