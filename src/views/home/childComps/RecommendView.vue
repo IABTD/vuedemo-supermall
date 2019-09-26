@@ -19,7 +19,24 @@
           return []
         }
       }
-    }
+    },
+    data(){
+      return {
+        isLoad:false
+      }
+    },
+    // methods:{
+    //   imageLoad(){
+    //     console.log("load...................")
+    //     if(!this.isLoad){
+    //       this.isLoad = true;
+    //       this.$emit('recommendIsLoaded')
+    //     }
+    //   }
+    // },
+    // mounted() {
+    //   console.log('RecommendView loading....')
+    // }
   }
 </script>
 

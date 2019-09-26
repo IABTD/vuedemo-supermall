@@ -4,7 +4,10 @@
     <nav-bar class="home-nav">
       <template v-slot:center>购物街</template>
     </nav-bar>
-
+    <tab-control class="tab-control"
+                 :titles="['流行','新款','精选']"
+                 @tabClick="tabClick"
+                 ref="tabControl1" v-show="isTabFixed"></tab-control>
     <scroll class="content"
             ref="scroll"
             :probe-type="3"
@@ -12,13 +15,13 @@
             :pull-up-load="true"
             @pullingUp="loadMore">
       <!--            @pullingUp="loadMore">-->
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
-      <feature-view></feature-view>
+      <feature-view @FeatureIsLoaded="FeatureIsLoaded"></feature-view>
       <tab-control class="tab-control"
                    :titles="['流行','新款','精选']"
                    @tabClick="tabClick"
-      ref="tabControl"></tab-control>
+                   ref="tabControl2"></tab-control>
       <goods-list :goods="showGoods"></goods-list>
       <ul>
         <li>首页列表1</li>
@@ -170,7 +173,11 @@
         },
         currentType: 'pop',
         isShowBackTop: false,
-        offsetTop:0
+        tabOffsetTop: Infinity,
+        swiperImageLoadFinished: false,
+        FeatureIsLoadedFinished:false,
+        // recommendImageLoadedFinished: false,
+        isTabFixed: false,
       }
     },
     computed: {
@@ -188,36 +195,36 @@
       this.getHomeGoods('sell')
     },
     mounted() {
-      // console.log(this.$refs.tabControl.offsetTop)
-
       // 3.监听item中图片加载完成
-      // const refresh = this.debounce(this.$refs.scroll.refresh, 100)
       const refresh = debounce(this.$refs.scroll.refresh, 100)
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
-      // this.$bus.$on('itemImageLoad',()=>{
-      //   this.$refs.scroll.refresh()
-      // })
-
-      console.log(this.$refs.tabControl.$el.offsetTop)
-      console.log(this.$refs.tabControl.$el)
-
     },
     methods: {
-      /**
-       *  事件监听相关的方法
-       */
-      // 防抖动函数，短时间内多次执行检查函数
-      // debounce(func, delay) {
-      //   let timer = null;
-      //   return function (...args) {
-      //     if (timer) clearTimeout(timer)
-      //     // timer = setTimeout(func(...args),delay)
-      //     timer = setTimeout(() => {
-      //       func.apply(this, args)
-      //     }, delay)
-      //   }
+      swiperImageLoad() {
+        this.swiperImageLoadFinished = true;
+        if (this.FeatureIsLoadedFinished && this.swiperImageLoadFinished){
+          this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+          // console.log(this.$refs.tabControl2.$el.offsetTop)
+          // alert("swiperImageLoad:"+this.$refs.tabControl2.$el.offsetTop)
+        }
+      },
+      FeatureIsLoaded(){
+        this.FeatureIsLoadedFinished = true;
+        if ( this.FeatureIsLoadedFinished){
+          console.log(this.$refs.tabControl2.$el.offsetTop)
+          this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+          // alert("swiperImageLoad:"+this.$refs.tabControl2.$el.offsetTop)
+        }
+      },
+      // recommendIsLoaded() {
+      //   // let tabOffsetTop = this.tabOffsetTop;
+      //   // this.recommendImageLoadedFinished = true;
+      //   if (this.recommendImageLoadedFinished && this.swiperImageLoadFinished)
+      //     this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+      //     console.log(this.$refs.tabControl2.$el.offsetTop)
+      //     // alert("recommendIsLoaded:"+this.$refs.tabControl2.$el.offsetTop)
       // },
       tabClick(index) {
         switch (index) {
@@ -233,13 +240,19 @@
           default:
             break;
         }
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
       },
       backClick() {
         // console.log('回到顶部')
         this.$refs.scroll.scrollTo(0, 0)
       },
       contentScroll(position) {
+        // 1.判断BackTops是否显示
         this.isShowBackTop = (-position.y) > 1000
+
+        // 2.决定tabControl是否吸顶(position:fixed)
+        this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
       loadMore() {
         // alert(123456)
@@ -281,16 +294,17 @@
     background-color: var(--color-tint);
     color: white;
 
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    z-index: 9;
+    /*使用浏览器原生滚动，为了固定不让滚动，才用*/
+    /*    position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        z-index: 9;*/
   }
 
   .tab-control {
-    position: sticky;
-    top: 44px;
+    position: relative;
+    /*top: 44px;*/
     z-index: 9;
   }
 
@@ -302,6 +316,13 @@
     left: 0;
     right: 0;
   }
+
+  /*  .fixed{
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 44px;
+    }*/
 
   /*.content{*/
   /*  height: calc(100% - 93px);*/
