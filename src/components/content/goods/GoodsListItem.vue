@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemClick">
     <img src="goodsItem.show.img" @load="imageLoad"/>
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
@@ -24,6 +24,16 @@
       imageLoad(){
         // console.log('imageLoad');
         this.$bus.$emit('itemImageLoad')
+      },
+      itemClick(){
+        //跳转到对应的详情页面,这个是动态路由的方式
+        this.$router.push('/detail/'+this.goodsItem.iid)
+        // this.$router.push({
+        //   path:'/detail',
+        //   query:{
+        //     //query方式
+        //   }
+        // })
       }
     }
   }
