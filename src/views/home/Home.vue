@@ -178,6 +178,7 @@
         FeatureIsLoadedFinished:false,
         // recommendImageLoadedFinished: false,
         isTabFixed: false,
+        saveY:0
       }
     },
     computed: {
@@ -201,31 +202,27 @@
         refresh()
       })
     },
+    activated(){
+      this.$refs.scroll.scrollTo(0,this.saveY,0)
+      this.$refs.scroll.refresh()
+    },
+    deactivated(){
+      this.saveY = this.$refs.scroll.getScrollY()
+    },
     methods: {
       swiperImageLoad() {
         this.swiperImageLoadFinished = true;
         if (this.FeatureIsLoadedFinished && this.swiperImageLoadFinished){
           this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
-          // console.log(this.$refs.tabControl2.$el.offsetTop)
-          // alert("swiperImageLoad:"+this.$refs.tabControl2.$el.offsetTop)
         }
       },
       FeatureIsLoaded(){
         this.FeatureIsLoadedFinished = true;
         if ( this.FeatureIsLoadedFinished){
-          console.log(this.$refs.tabControl2.$el.offsetTop)
           this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
           // alert("swiperImageLoad:"+this.$refs.tabControl2.$el.offsetTop)
         }
       },
-      // recommendIsLoaded() {
-      //   // let tabOffsetTop = this.tabOffsetTop;
-      //   // this.recommendImageLoadedFinished = true;
-      //   if (this.recommendImageLoadedFinished && this.swiperImageLoadFinished)
-      //     this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
-      //     console.log(this.$refs.tabControl2.$el.offsetTop)
-      //     // alert("recommendIsLoaded:"+this.$refs.tabControl2.$el.offsetTop)
-      // },
       tabClick(index) {
         switch (index) {
           case 0:
@@ -244,7 +241,6 @@
         this.$refs.tabControl2.currentIndex = index;
       },
       backClick() {
-        // console.log('回到顶部')
         this.$refs.scroll.scrollTo(0, 0)
       },
       contentScroll(position) {
@@ -255,8 +251,6 @@
         this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
       loadMore() {
-        // alert(123456)
-        console.log('上拉加载.......上拉加载.......上拉加载.......上拉加载.......')
         this.getHomeGoods(this.currentType)
         //默认pullingUp只执行第一次，需要finishPullUp才能重置
       },
